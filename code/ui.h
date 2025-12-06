@@ -24,7 +24,8 @@ typedef struct {
 
 void ui_init();
 void ui_close();
-void ui_render(ProcessList *list, Host *hosts, int host_id);
+void ui_render(ProcessList *list, Host *hosts, int host_id, int selected);
+
 
 // UI basique
 void ui_draw_header(Host host);
