@@ -1,6 +1,6 @@
 # LP25
 Lien vers le sujet:
 https://github.com/KodjoTossou/lp25-a25/
-\n
-Commandes pour installer ncurses:\n
-sudo apt install libncurses5-dev \n
+
+Commandes pour installer ncurses:
+sudo apt install libncurses5-dev 
