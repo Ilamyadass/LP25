@@ -26,8 +26,12 @@ void ui_init();
 void ui_close();
 void ui_render(ProcessList *list, Host *hosts, int host_id);
 
+// UI basique
 void ui_draw_header(Host host);
-void ui_draw_table(ProcessList *list);
+void ui_draw_table(ProcessList *list, int selected);
 void ui_draw_footer();
+
+// Gestion sélection / actions
+int ui_process_action(int key, ProcessInfo *p);
 
 #endif
