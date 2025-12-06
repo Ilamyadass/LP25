@@ -55,7 +55,7 @@ void ui_draw_table(ProcessList *list) {
 void ui_draw_footer() {
     mvhline(LINES - 2, 0, '-', COLS);
     mvprintw(LINES - 1, 0,
-        "F1 Aide | F2 Suivant | F3 Précédent | F5 Pause | F6 Stop | F7 Kill | F8 Restart");
+        "F1 Aide | F2 Suivant | F3 PrÃ©cÃ©dent | F4 Rechercher | F5 Pause | F6 Stop | F7 Kill | F8 Restart");
 }
 
 void ui_render(ProcessList *list, Host *hosts, int host_id) {
@@ -65,3 +65,4 @@ void ui_render(ProcessList *list, Host *hosts, int host_id) {
     ui_draw_footer();
     refresh();
 }
+
