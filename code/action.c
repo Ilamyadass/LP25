@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-// Fonction qui exécute l'action demandée sur le PID, il fontionne de manière indépendante 
+// Fonction qui exécute l'action demandée sur le PID, il fontionne de manière indépendante pour l'instant mais le principe est celui ci
 void action_processus(int pid, int choix) {
     switch (choix) {
         case 1: // MISE EN PAUSE
