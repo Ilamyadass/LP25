@@ -11,9 +11,9 @@ void ui_init() {
     curs_set(0);
 
     start_color();
-    init_pair(1, COLOR_GREEN,  COLOR_BLACK);  // Header
-    init_pair(2, COLOR_CYAN,   COLOR_BLACK);  // Footer
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);  // Selected process
+    init_pair(1, COLOR_GREEN,  COLOR_BLACK);
+    init_pair(2, COLOR_CYAN,   COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
 }
 
 void ui_close() {
@@ -41,7 +41,6 @@ void ui_draw_footer() {
 void ui_draw_table(ProcessList *list, int selected, int offset) {
     int y = 2;
 
-    // ---- En-tête des colonnes ----
     attron(A_BOLD);
     mvprintw(y, 0,
         "%-6s %-10s %-8s %6s %6s %s",
@@ -52,7 +51,6 @@ void ui_draw_table(ProcessList *list, int selected, int offset) {
 
     int max_lines = LINES - 4;
 
-    // ---- Lignes des processus ----
     for (int i = 0; i < max_lines && (i + offset) < list->count; i++) {
 
         ProcessInfo *p = &list->items[i + offset];
