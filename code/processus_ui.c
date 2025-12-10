@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h> 
-#include <sys/types.h>
+#include <signal.h>    // Toujours nécessaire pour la commande kill()
+#include <sys/types.h> // Nécessaire pour les types PID
 
 void ui_init() {
     initscr();
@@ -16,7 +16,6 @@ void ui_init() {
     init_pair(1, COLOR_GREEN,  COLOR_BLACK);
     init_pair(2, COLOR_CYAN,   COLOR_BLACK);
     init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_RED,    COLOR_BLACK); 
 }
 
 void ui_close() {
@@ -71,61 +70,28 @@ void ui_draw_table(ProcessList *list, int selected, int offset) {
     }
 }
 
-
+// VERSION ULTRA SIMPLIFIÉE : Actions silencieuses
 int ui_process_action(int key, ProcessInfo *p) {
-    // Si aucun processus n'est sélectionné (liste vide), on ne fait rien
     if (p == NULL) return 0;
-
-    
-    move(1, 0);
-    clrtoeol(); 
 
     switch (key) {
         case KEY_F(5): // PAUSE
-            if (kill(p->pid, SIGSTOP) == 0) {
-                attron(COLOR_PAIR(3) | A_BOLD);
-                mvprintw(1, 2, "[PAUSE] Signal SIGSTOP envoyé à %d (%s)", p->pid, p->cmd);
-                attroff(COLOR_PAIR(3) | A_BOLD);
-            } else {
-                attron(COLOR_PAIR(4) | A_BOLD);
-                mvprintw(1, 2, "Erreur: Impossible de mettre en pause %d (Droits insuffisants ?)", p->pid);
-                attroff(COLOR_PAIR(4) | A_BOLD);
-            }
+            kill(p->pid, SIGSTOP);
             return 1;
 
-        case KEY_F(6): // STOP (SIGTERM - arrêt propre)
-            if (kill(p->pid, SIGTERM) == 0) {
-                attron(COLOR_PAIR(4) | A_BOLD);
-                mvprintw(1, 2, "[STOP] Signal SIGTERM envoyé à %d", p->pid);
-                attroff(COLOR_PAIR(4) | A_BOLD);
-            } else {
-                mvprintw(1, 2, "Erreur: Impossible d'arrêter %d", p->pid);
-            }
+        case KEY_F(6): // STOP (Demande d'arrêt)
+            kill(p->pid, SIGTERM);
             return 2;
 
-        case KEY_F(7): // KILL (SIGKILL - arrêt forcé)
-            if (kill(p->pid, SIGKILL) == 0) {
-                attron(COLOR_PAIR(4) | A_REVERSE | A_BOLD);
-                mvprintw(1, 2, "[KILL] Signal SIGKILL envoyé à %d (RIP)", p->pid);
-                attroff(COLOR_PAIR(4) | A_REVERSE | A_BOLD);
-            } else {
-                mvprintw(1, 2, "Erreur: Impossible de tuer %d", p->pid);
-            }
+        case KEY_F(7): // KILL (Forcer l'arrêt)
+            kill(p->pid, SIGKILL);
             return 3;
 
         case KEY_F(8): // RESTART / CONTINUE
-            if (kill(p->pid, SIGCONT) == 0) {
-                attron(COLOR_PAIR(1) | A_BOLD);
-                mvprintw(1, 2, "[CONT] Signal SIGCONT envoyé à %d", p->pid);
-                attroff(COLOR_PAIR(1) | A_BOLD);
-            } else {
-                mvprintw(1, 2, "Erreur: Impossible de relancer %d", p->pid);
-            }
+            kill(p->pid, SIGCONT);
             return 4;
 
         default:
-            // Si aucune action, on remet la ligne de séparation
-            mvhline(1, 0, '-', COLS);
             return 0;
     }
 }
