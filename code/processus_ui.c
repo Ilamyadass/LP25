@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>    // Toujours nécessaire pour la commande kill()
-#include <sys/types.h> // Nécessaire pour les types PID
+#include <signal.h>    
+#include <sys/types.h> 
 
 void ui_init() {
     initscr();
@@ -70,7 +70,7 @@ void ui_draw_table(ProcessList *list, int selected, int offset) {
     }
 }
 
-// VERSION ULTRA SIMPLIFIÉE : Actions silencieuses
+//ça fonctionne mais le refresh est assez long 
 int ui_process_action(int key, ProcessInfo *p) {
     if (p == NULL) return 0;
 
