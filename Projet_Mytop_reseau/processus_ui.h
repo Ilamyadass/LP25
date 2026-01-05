@@ -56,7 +56,10 @@ int process_collect_local(ProcessList *list);
 int network_collect_ssh(Host *host, ProcessList *list);
 int network_collect_telnet(Host *host, ProcessList *list);
 int network_pause_pid(Host *host, int pid);
+int network_stop_pid(Host *host, int pid);
+int network_kill_pid(Host *host, int pid);
 int network_resume_pid(Host *host, int pid);
+
 
 // 4. Interface Graphique (Dans processus_ui.c ou ui.c)
 void ui_init();
