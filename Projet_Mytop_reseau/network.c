@@ -24,7 +24,7 @@ int network_collect_ssh(Host *host, ProcessList *list) {
             remote_cmd
         );
     } else {
-        // CAS SANS MOT DE PASSE (Clé SSH)
+        // CAS SANS MOT DE PASSE (Clé SSH)(non implémenté)
         snprintf(final_command, sizeof(final_command), 
             "ssh -p %d -o StrictHostKeyChecking=no -o ConnectTimeout=3 %s@%s \"%s\"", 
             host->port ? host->port : 22,
