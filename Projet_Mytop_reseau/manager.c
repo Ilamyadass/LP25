@@ -196,18 +196,35 @@ int main(int argc, char **argv) {
 
         // ACTIONS SUR PROCESSUS (Kill, Pause...)
         // Sécurité : Uniquement si la connexion est LOCALE
+       // ACTIONS SUR PROCESSUS (Kill, Pause...)
         if (list.count > 0 && selected < list.count) {
-            if (h->type == CON_LOCAL) {
-                // Si touche F5-F8 appuyée, on appelle l'action
-                ui_process_action(ch, &list.items[selected]);
-            }
-            else {
-                // Si Distant : On interdit et on bip
-                if (ch == KEY_F(5) || ch == KEY_F(6) || ch == KEY_F(7) || ch == KEY_F(8)) {
-                    beep(); 
+            ProcessInfo *p = &list.items[selected];
+        
+            if (ch == KEY_F(5)) { // Kill par PID
+                int ok = 0;
+                if (h->type == CON_LOCAL) {
+                    ok = ui_process_action(ch, p); // existant pour local
+                } else if (h->type == CON_SSH) {
+                    ok = network_kill_pid(h, p->pid);
                 }
+        
+                if (!ok) beep(); // signaler l'échec
             }
+        
+            if (ch == KEY_F(6)) { // Kill par nom
+                int ok = 0;
+                if (h->type == CON_LOCAL) {
+                    ok = ui_process_action(ch, p); 
+                } else if (h->type == CON_SSH) {
+                    ok = network_kill_name(h, p->cmd);
+                }
+        
+                if (!ok) beep();
+            }
+        
+            // TODO : F7/F8 pour Pause/Resume, à compléter si nécessaire
         }
+
 
         // Navigation Haut/Bas
         ui_handle_input(ch, &list, &selected, &offset);
