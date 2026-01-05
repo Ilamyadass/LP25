@@ -75,4 +75,15 @@ int network_collect_ssh(Host *host, ProcessList *list) {
     list->count = count;
     return 1; // Succès
 }
+int network_pause_pid(Host *host, int pid) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "sudo kill -STOP %d", pid);
+    return network_exec_ssh(host, cmd);
+}
+
+int network_resume_pid(Host *host, int pid) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "sudo kill -CONT %d", pid);
+    return network_exec_ssh(host, cmd);
+}
 
