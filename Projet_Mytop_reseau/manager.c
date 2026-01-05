@@ -196,34 +196,54 @@ int main(int argc, char **argv) {
 
         // ACTIONS SUR PROCESSUS (Kill, Pause...)
         // Sécurité : Uniquement si la connexion est LOCALE
-       // ACTIONS SUR PROCESSUS (Kill, Pause...)
         if (list.count > 0 && selected < list.count) {
             ProcessInfo *p = &list.items[selected];
+            int ok = 0;
         
-            if (ch == KEY_F(5)) { // Kill par PID
-                int ok = 0;
-                if (h->type == CON_LOCAL) {
-                    ok = ui_process_action(ch, p); // existant pour local
-                } else if (h->type == CON_SSH) {
-                    ok = network_kill_pid(h, p->pid);
-                }
+            switch (ch) {
         
-                if (!ok) beep(); // signaler l'échec
+                case KEY_F(5): // PAUSE
+                    if (h->type == CON_LOCAL) {
+                        ok = ui_process_action(ch, p);
+                    } 
+                    else if (h->type == CON_SSH) {
+                        ok = network_pause_pid(h, p->pid);
+                    }
+                    if (!ok) beep();
+                    break;
+        
+                case KEY_F(6): // STOP (SIGTERM)
+                    if (h->type == CON_LOCAL) {
+                        ok = ui_process_action(ch, p);
+                    } 
+                    else if (h->type == CON_SSH) {
+                        ok = network_kill_pid(h, p->pid); // SIGTERM ou SIGKILL selon ton choix
+                    }
+                    if (!ok) beep();
+                    break;
+        
+                case KEY_F(7): // KILL (SIGKILL)
+                    if (h->type == CON_LOCAL) {
+                        ok = ui_process_action(ch, p);
+                    } 
+                    else if (h->type == CON_SSH) {
+                        ok = network_kill_pid(h, p->pid);
+                    }
+                    if (!ok) beep();
+                    break;
+        
+                case KEY_F(8): // RESUME
+                    if (h->type == CON_LOCAL) {
+                        ok = ui_process_action(ch, p);
+                    } 
+                    else if (h->type == CON_SSH) {
+                        ok = network_resume_pid(h, p->pid);
+                    }
+                    if (!ok) beep();
+                    break;
             }
-        
-            if (ch == KEY_F(6)) { // Kill par nom
-                int ok = 0;
-                if (h->type == CON_LOCAL) {
-                    ok = ui_process_action(ch, p); 
-                } else if (h->type == CON_SSH) {
-                    ok = network_kill_name(h, p->cmd);
-                }
-        
-                if (!ok) beep();
-            }
-        
-            // TODO : F7/F8 pour Pause/Resume, à compléter si nécessaire
         }
+
 
 
         // Navigation Haut/Bas
