@@ -75,7 +75,7 @@ void ui_render(ProcessList *list, Host *host, int selected, int offset) {
     // --- FOOTER ---
     int max_h, max_w;
     getmaxyx(stdscr, max_h, max_w);
-    (void)max_w; // <--- AJOUTEZ CETTE LIGNE pour supprimer le warning
+    (void)max_w;
     
     attron(COLOR_PAIR(3));
     
@@ -85,20 +85,25 @@ void ui_render(ProcessList *list, Host *host, int selected, int offset) {
     // Ligne d'actions
     move(max_h - 1, 0);
     clrtoeol(); 
-    
+
     if (host->type == CON_LOCAL) {
         printw("ACTIONS : F5 Pause | F6 Stop | F7 Kill | F8 Reprendre");
     } 
+    else if (host->type == CON_SSH) {
+        attron(A_BOLD);
+        printw("ACTIONS DISTANTES SSH : F5 Kill PID | F6 Kill Nom (sudo)");
+        attroff(A_BOLD);
+    }
     else {
         attron(A_BOLD);
-        printw("( Mode Lecture Seule - Actions désactivées à distance )");
+        printw("( Mode Lecture Seule )");
         attroff(A_BOLD);
     }
     
     attroff(COLOR_PAIR(3));
-
     refresh();
 }
+
 // Gère la navigation Haut/Bas
 int ui_handle_input(int key, ProcessList *list, int *selected, int *offset) {
     int max_lines = LINES - 4;
