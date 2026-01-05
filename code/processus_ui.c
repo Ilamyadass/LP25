@@ -1,7 +1,9 @@
-#include "ui.h"
+#include "processus_ui.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>    
+#include <sys/types.h> 
 
 void ui_init() {
     initscr();
@@ -27,14 +29,13 @@ void ui_draw_header(Host host, int count) {
     mvhline(1, 0, '-', COLS);
 }
 
-
 void ui_draw_footer() {
     int h, w;
     getmaxyx(stdscr, h, w);
 
     attron(COLOR_PAIR(2) | A_BOLD);
     mvprintw(h-2, 1,
-        "F1 Aide  |  F2 Suivant  |  F3 Précédent  |  F4 Rechercher | F5 Pause |  F6 Stop  |  F7 Kill |  F8 Redémarrer | q Quitter");
+        "F1 Aide | F2 Suivant | F3 Précédent | F5 Pause | F6 Stop | F7 Kill | F8 Reprendre | q Quitter");
     attroff(COLOR_PAIR(2) | A_BOLD);
 }
 
@@ -69,21 +70,27 @@ void ui_draw_table(ProcessList *list, int selected, int offset) {
     }
 }
 
-
+//ça fonctionne mais le refresh est assez long 
 int ui_process_action(int key, ProcessInfo *p) {
+    if (p == NULL) return 0;
+
     switch (key) {
-        case KEY_F(5):
-            mvprintw(1, COLS-30, "[PAUSE] Processus %d", p->pid);
+        case KEY_F(5): // PAUSE
+            kill(p->pid, SIGSTOP);
             return 1;
-        case KEY_F(6):
-            mvprintw(1, COLS-30, "[STOP]  Processus %d", p->pid);
+
+        case KEY_F(6): // STOP (Demande d'arrêt)
+            kill(p->pid, SIGTERM);
             return 2;
-        case KEY_F(7):
-            mvprintw(1, COLS-30, "[KILL]  Processus %d", p->pid);
+
+        case KEY_F(7): // KILL (Forcer l'arrêt)
+            kill(p->pid, SIGKILL);
             return 3;
-        case KEY_F(8):
-            mvprintw(1, COLS-30, "[RESTART] Processus %d", p->pid);
+
+        case KEY_F(8): // RESTART / CONTINUE
+            kill(p->pid, SIGCONT);
             return 4;
+
         default:
             return 0;
     }
