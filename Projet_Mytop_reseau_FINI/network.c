@@ -79,7 +79,7 @@ int network_collect_ssh(Host *host, ProcessList *list) {
 /* FONCTIONS D'ACTIONS RESEAU             */
 /* ================================================================== */
 
-// 1. Fonction outil (Celle qui vous manquait !)
+// 1. Fonction outil 
 // Elle fabrique la commande SSH et l'envoie.
 int network_exec_ssh(Host *host, char *remote_cmd) {
     char final_command[2048];
