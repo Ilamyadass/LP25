@@ -2,25 +2,28 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g
 LDFLAGS = -lncurses
 
-SRC = ex_main.c ui.c
+
+SRC = processus_main.c processus_ui.c process.c
 OBJ = $(SRC:.c=.o)
 
-TARGET = ui_app
+
+TARGET = mytop
 
 all: deps $(TARGET)
 
+
 deps:
-	@echo "verification de ncurses..."
-	@ldconfig -p | grep -q libncursesw || { \
-		echo "ncurses nest pas installe. Installation..."; \
+	@echo "Verification de ncurses..."
+	@ldconfig -p | grep -q libncursesw || ldconfig -p | grep -q libncurses || { \
+		echo "ncurses n'est pas installe. Installation..."; \
 		sudo apt-get update && sudo apt-get install -y libncurses5-dev libncursesw5-dev; \
 	}
-	@echo "ncurses est installe."
+
 
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(TARGET)
 
-%.o: %.c ui.h
+%.o: %.c processus_ui.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

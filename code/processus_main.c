@@ -1,4 +1,5 @@
-#include "ui.h"
+#include "processus_ui.h" 
+#include <unistd.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -88,4 +89,3 @@ int main() {
     free(list.items);
     return 0;
 }
-

@@ -9,6 +9,8 @@
 
 #define FILE_SIZE 4096
 
+// --- VOS FONCTIONS UTILITAIRES (INCHANGÉES) ---
+
 int read_file(const char *path, char *const_file, size_t size) {
     FILE *f = fopen(path, "r");
     if (!f) return 0;
@@ -30,10 +32,15 @@ void format_time(float seconds, char *out) {
     sprintf(out, "%d:%05.2f", minutes, sec_cs);
 }
 
+// Variables globales pour le calcul du CPU (Delta)
 float prev_total[65536];
 float prev_uptime = 0;
 
-int load_processes(ProcessList *list) {
+// --- FONCTION PRINCIPALE ---
+// J'ai renommé 'load_processes' en 'process_collect_local' pour que le manager le reconnaisse.
+// J'utilise 'list->items' directement au lieu de 'malloc' pour éviter les fuites de mémoire.
+
+int process_collect_local(ProcessList *list) {
     DIR *dir = opendir("/proc");
     if (!dir) return 0;
 
@@ -55,8 +62,10 @@ int load_processes(ProcessList *list) {
     float uptime = get_uptime();
     float delta_time = (prev_uptime > 0) ? (uptime - prev_uptime) : 1;
 
-    ProcessInfo *items = malloc(sizeof(ProcessInfo) * 4096);
+    // MODIFICATION ICI : On utilise le tableau déjà créé par le Manager
+    ProcessInfo *items = list->items; 
     int count = 0;
+    int capacity = list->capacity; // On récupère la limite pour ne pas déborder
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
@@ -64,13 +73,16 @@ int load_processes(ProcessList *list) {
             continue;
 
         int pid = atoi(entry->d_name);
+        
+        // Sécurité : Si on dépasse la capacité prévue, on arrête
+        if (pid >= 65536) continue; 
 
         char path[256], l_lu[FILE_SIZE];
         sprintf(path, "/proc/%d/stat", pid);
         if (!read_file(path, l_lu, sizeof(l_lu)))
             continue;
 
-        char *p1 = strchr(l_lu,  '(');
+        char *p1 = strchr(l_lu, '(');
         char *p2 = strrchr(l_lu, ')');
         if (!p1 || !p2) continue;
 
@@ -123,31 +135,50 @@ int load_processes(ProcessList *list) {
         const char *user = pw ? pw->pw_name : "unknown";
 
         // stockage des valeurs
-        ProcessInfo *P = &items[count++];
-        P->pid = pid;
-        strncpy(P->user, user, 31);
-        strncpy(P->cmd, comm, 255);
-        P->cpu = cpu;
-        P->mem = mem;
-
-        format_time(cpu_time, P->time);
-
-        if (count >= 4096) break;
+        if (count < capacity) {
+            ProcessInfo *P = &items[count++];
+            P->pid = pid;
+            strncpy(P->user, user, 31);
+            strncpy(P->cmd, comm, 255);
+            P->cpu = cpu;
+            P->mem = mem;
+            format_time(cpu_time, P->time);
+        } else {
+            break; // Liste pleine
+        }
     }
 
     closedir(dir);
 
-    // inversion du tableau pour avoir les derniers processus lancés
+    // Votre inversion du tableau (Pour avoir les derniers processus lancés)
     for (int i = 0; i < count / 2; i++) {
         ProcessInfo tmp = items[i];
         items[i] = items[count - 1 - i];
         items[count - 1 - i] = tmp;
     }
 
-    list->items = items;
+    // Mise à jour finale pour le manager
     list->count = count;
-
     prev_uptime = uptime;
 
     return 1;
+}
+
+/* --- GESTION DE LA MEMOIRE (Nécessaire pour le Manager) --- */
+
+void init_process_list(ProcessList *list, int capacity) {
+    // Alloue la mémoire pour le tableau de processus une seule fois au début
+    list->items = (ProcessInfo *)malloc(sizeof(ProcessInfo) * capacity);
+    list->capacity = capacity;
+    list->count = 0;
+}
+
+void free_process_list(ProcessList *list) {
+    // Libère la mémoire proprement à la fermeture du programme
+    if (list->items) {
+        free(list->items);
+        list->items = NULL;
+    }
+    list->count = 0;
+    list->capacity = 0;
 }
