@@ -8,7 +8,7 @@ sudo apt install libncurses5-dev
 
 une fois le programe compilé il s'execute avec ./mytop
 
-si il y a des problèmes de droit d'execution pour ./mytop , faites : "chmod +x mytop" dans la console de comande.
+si il y a des problèmes de droit d'execution pour ./mytop , faites : "make clean" dans la console de comande puis refaire "make".
 
 
 pour instaler le réseau SSH
