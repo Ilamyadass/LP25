@@ -75,15 +75,32 @@ int network_collect_ssh(Host *host, ProcessList *list) {
     list->count = count;
     return 1; // Succès
 }
+// Pause un processus distant
 int network_pause_pid(Host *host, int pid) {
     char cmd[128];
     snprintf(cmd, sizeof(cmd), "sudo kill -STOP %d", pid);
     return network_exec_ssh(host, cmd);
 }
 
+// Stop propre (SIGTERM)
+int network_stop_pid(Host *host, int pid) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "sudo kill -TERM %d", pid);
+    return network_exec_ssh(host, cmd);
+}
+
+// Kill forcé (SIGKILL)
+int network_kill_pid(Host *host, int pid) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "sudo kill -KILL %d", pid);
+    return network_exec_ssh(host, cmd);
+}
+
+// Reprendre un processus stoppé
 int network_resume_pid(Host *host, int pid) {
     char cmd[128];
     snprintf(cmd, sizeof(cmd), "sudo kill -CONT %d", pid);
     return network_exec_ssh(host, cmd);
 }
+
 
