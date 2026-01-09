@@ -23,7 +23,7 @@ void ui_close() {
     endwin();
 }
 
-// Affiche le haut (Header)
+// Affiche le haut 
 void ui_draw_header(Host *host, int count) {
     if (host->connected) {
         attron(COLOR_PAIR(1) | A_BOLD);
@@ -37,7 +37,7 @@ void ui_draw_header(Host *host, int count) {
     mvhline(1, 0, '-', COLS); // Ligne horizontale
 }
 
-// Affiche le tableau (Table)
+// Affiche le tableau 
 void ui_draw_table(ProcessList *list, int selected, int offset) {
     // Titres des colonnes
     attron(A_BOLD);
