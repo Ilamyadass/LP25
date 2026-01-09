@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
         add_host("Serveur Manuel", remote_server, 22, username, password, CON_SSH);
     }
     
-    // 4. Ajout Local (si demandé ou si liste vide)
+    // 4. Ajout Local 
     if (host_count == 0 || mode_all) {
         add_host("Cette Machine", "127.0.0.1", 0, "local", "", CON_LOCAL);
     }
@@ -194,8 +194,7 @@ int main(int argc, char **argv) {
             counter = -1;
         }
 
-        // ACTIONS SUR PROCESSUS (Kill, Pause...)
-        // Sécurité : Uniquement si la connexion est LOCALE
+        
         // ACTIONS SUR PROCESSUS (Kill, Pause...)
         if (list.count > 0 && selected < list.count) {
             ProcessInfo *p = &list.items[selected];
