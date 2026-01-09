@@ -24,7 +24,7 @@ int network_collect_ssh(Host *host, ProcessList *list) {
             remote_cmd
         );
     } else {
-        // CAS SANS MOT DE PASSE (Clé SSH)(non implémenté)
+        // CAS SANS MOT DE PASSE (Clé SSH)(non testé)
         snprintf(final_command, sizeof(final_command), 
             "ssh -p %d -o StrictHostKeyChecking=no -o ConnectTimeout=3 %s@%s \"%s\"", 
             host->port ? host->port : 22,
@@ -75,16 +75,16 @@ int network_collect_ssh(Host *host, ProcessList *list) {
     list->count = count;
     return 1; // Succès
 }
-/* ================================================================== */
-/* FONCTIONS D'ACTIONS RESEAU             */
-/* ================================================================== */
+
+/*---------------------------- FONCTIONS D'ACTIONS RESEAU------------------------------------- */
+
 
 // 1. Fonction outil 
 // Elle fabrique la commande SSH et l'envoie.
 int network_exec_ssh(Host *host, char *remote_cmd) {
     char final_command[2048];
     
-    // Construction de la commande SSH (avec ou sans sshpass)
+    // Construction de la commande SSH 
     if (strlen(host->password) > 0) {
         snprintf(final_command, sizeof(final_command), 
             "sshpass -p '%s' ssh -p %d -o StrictHostKeyChecking=no -o ConnectTimeout=3 %s@%s \"%s\"", 
